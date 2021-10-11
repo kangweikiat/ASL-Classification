@@ -27,6 +27,7 @@
     <orderEntry type="library" name="Maven: org.nd4j:nd4j-native-api:1.0.0-M1.1" level="project" />
     <orderEntry type="library" name="Maven: org.nd4j:nd4j-native-preset:1.0.0-M1.1" level="project" />
     <orderEntry type="library" name="Maven: org.nd4j:nd4j-native-preset:windows-x86_64:1.0.0-M1.1" level="project" />
+    <orderEntry type="library" name="Maven: org.projectlombok:lombok:1.18.16" level="project" />
     <orderEntry type="library" name="Maven: org.datavec:datavec-api:1.0.0-M1.1" level="project" />
     <orderEntry type="library" name="Maven: org.apache.commons:commons-lang3:3.6" level="project" />
     <orderEntry type="library" name="Maven: commons-io:commons-io:2.5" level="project" />

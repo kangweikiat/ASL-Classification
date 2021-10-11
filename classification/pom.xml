@@ -47,6 +47,8 @@ information regarding copyright ownership.
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <junit.version>5.8.0-M1</junit.version>
         <javacv.version>1.5.5</javacv.version>
+        <javafx.version>2.2.3</javafx.version>
+        <lombok.version>1.18.16</lombok.version>
 
     </properties>
 
@@ -73,6 +75,11 @@ information regarding copyright ownership.
             <version>${dl4j-master.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>org.datavec</groupId>

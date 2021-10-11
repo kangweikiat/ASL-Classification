@@ -15,6 +15,7 @@ dependency-reduced-pom.xml
 application.home_IS_UNDEFINEiD
 README.md~
 *.png
+*.jpg
 *.bin
 *.releaseBackup
 *.out
