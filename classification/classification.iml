@@ -11,6 +11,7 @@
     </content>
     <orderEntry type="jdk" jdkName="liberica-1.8" jdkType="JavaSDK" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="Maven: org.projectlombok:lombok:1.18.16" level="project" />
     <orderEntry type="library" name="Maven: org.nd4j:nd4j-native:1.0.0-M1.1" level="project" />
     <orderEntry type="library" name="Maven: org.nd4j:nd4j-native:windows-x86_64:1.0.0-M1.1" level="project" />
     <orderEntry type="library" name="Maven: org.bytedeco:javacpp:1.5.5" level="project" />
