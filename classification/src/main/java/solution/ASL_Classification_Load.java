@@ -16,7 +16,14 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import org.datavec.image.loader.NativeImageLoader;
+import org.deeplearning4j.nn.graph.ComputationGraph;
+import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
+import org.deeplearning4j.util.ModelSerializer;
 import org.nd4j.common.io.ClassPathResource;
+import org.nd4j.linalg.api.ndarray.INDArray;
+import org.nd4j.linalg.dataset.api.preprocessor.DataNormalization;
+import org.nd4j.linalg.dataset.api.preprocessor.ImagePreProcessingScaler;
 
 import java.io.File;
 import java.io.IOException;
@@ -39,13 +46,21 @@ public class ASL_Classification_Load extends Application implements EventHandler
     //right layout
     Label predictLabel;
     Text text;
+    Text outputText;
 
     HBox hLayout;
     File response;
 
-    public static void main(String[] args) {
+    private static MultiLayerNetwork model = null;
+    private static final int noOfChannels = 3; // no of channels = 3 because RGB
+    private static final int height = 50; // height = 50
+    private static final int width = 50; // wid
 
+    public static void main(String[] args) throws IOException {
+        File locationToLoad = new File("asl_trainedmodel.zip");
         //Load Trained Model
+        model = ModelSerializer.restoreMultiLayerNetwork(locationToLoad);
+        System.out.println(model.summary());
 
         launch();
     }
@@ -84,14 +99,15 @@ public class ASL_Classification_Load extends Application implements EventHandler
         //Right Layout
         predictLabel = new Label("Predicted Value");
         predictLabel.setFont(new Font(25));
-        HBox border = new HBox();
+        VBox border = new VBox();
         text = new Text(null);
         text.setFont(new Font(50));
-        border.getChildren().add(text);
+        outputText = new Text(null);
+        border.getChildren().addAll(text,outputText);
         border.setStyle(cssLayout);
         border.setAlignment(Pos.CENTER);
         vRight = new VBox(50);
-        vRight.getChildren().addAll(predictLabel,border);
+        vRight.getChildren().addAll(predictLabel, border);
         vRight.setAlignment(Pos.CENTER);
         vRight.setPrefWidth(250);
 
@@ -100,7 +116,7 @@ public class ASL_Classification_Load extends Application implements EventHandler
         hLayout.getChildren().addAll(vLeft, vCenter, vRight);
         hLayout.setAlignment(Pos.CENTER);
 
-        Scene scene = new Scene(hLayout, 1000, 500);
+        Scene scene = new Scene(hLayout, 1300, 500);
         primaryStage.setScene(scene);
         primaryStage.show();
     }
@@ -112,14 +128,36 @@ public class ASL_Classification_Load extends Application implements EventHandler
             configureFileChooser(fileChooser);
             response = fileChooser.showOpenDialog(null);
             if (response != null) {
-                image = new Image(response.toURI().toString(), 200, 200, false, false);
+                image = new Image(response.toURI().toString(), 200, 200, true, false);
                 imageView.setImage(image);
                 System.out.println("Path:\n" + response.getAbsoluteFile().getAbsolutePath());
+                System.out.println(image.getHeight() + " " + image.getWidth());
             }
         }
         if (actionEvent.getSource().equals(predictButton)) {
             // Feed image to trained model
-            text.setText("A");
+            NativeImageLoader loader = new NativeImageLoader(height, width, noOfChannels, true);
+            INDArray imageArray = null;
+            try {
+                imageArray = loader.asMatrix(response);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            DataNormalization scaler = new ImagePreProcessingScaler(0, 1);
+            scaler.transform(imageArray);
+            INDArray output = model.output(imageArray);
+
+            int prediction = model.predict(imageArray)[0];
+            String alphabet = null;
+            if (prediction == 0){ alphabet = "A";}
+            else if(prediction == 1) { alphabet = "B";}
+            else if(prediction == 2){alphabet = "C";}
+            else if (prediction == 3) {alphabet = "Del";}
+            else if(prediction == 4) {alphabet = "Space";}
+
+            System.out.println("Prediction: " + model.predict(imageArray)[0] + "\n " + output);
+            text.setText(alphabet);
+            outputText.setText(String.valueOf(output));
         }
     }
 
