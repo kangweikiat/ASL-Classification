@@ -8,6 +8,7 @@ import org.datavec.api.split.InputSplit;
 import org.datavec.image.loader.BaseImageLoader;
 import org.datavec.image.recordreader.ImageRecordReader;
 import org.datavec.image.transform.*;
+import org.deeplearning4j.core.storage.StatsStorage;
 import org.deeplearning4j.datasets.datavec.RecordReaderDataSetIterator;
 import org.deeplearning4j.nn.conf.MultiLayerConfiguration;
 import org.deeplearning4j.nn.conf.NeuralNetConfiguration;
@@ -19,6 +20,9 @@ import org.deeplearning4j.nn.conf.layers.SubsamplingLayer;
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
 import org.deeplearning4j.nn.weights.WeightInit;
 import org.deeplearning4j.optimize.listeners.ScoreIterationListener;
+import org.deeplearning4j.ui.api.UIServer;
+import org.deeplearning4j.ui.model.stats.StatsListener;
+import org.deeplearning4j.ui.model.storage.InMemoryStatsStorage;
 import org.deeplearning4j.util.ModelSerializer;
 import org.nd4j.common.io.ClassPathResource;
 import org.nd4j.common.primitives.Pair;
@@ -47,9 +51,9 @@ class ASL_Classification_Training {
     static int noOfEpoch = 5;
     static double learningrate = 1e-3; //learning rate static
     static int noOfChannels = 3; // no of channels = 3 because RGB
-    static int numberofclass = 5; // no of class = 5 (a,b,c,del and space)
-    static int height = 50; // height = 50
-    static int width = 50; // width = 50
+    static int numberofclass = 4; // no of class = 5 (a,b,c,del and space)
+    static int height = 200; // height = 200
+    static int width = 200; // width = 200
 
     public static Pair<DataSetIterator, DataSetIterator> DataRetriever() throws IOException {
         File allTrainData = new ClassPathResource("asl/asl_alphabet_train").getFile();
@@ -68,12 +72,12 @@ class ASL_Classification_Training {
 
         ImageTransform hFlip = new FlipImageTransform(1);
         ImageTransform rotate = new RotateImageTransform(15);
-        ImageTransform rCrop = new RandomCropTransform(60, 60);
+        ImageTransform rShow = new ShowImageTransform("Image");
 
         List<Pair<ImageTransform, Double>> augList = Arrays.asList(
                 new Pair<>(hFlip, 0.4),
                 new Pair<>(rotate, 0.5),
-                new Pair<>(rCrop, 0.3)
+                new Pair<>(rShow, 1.0)
         );
 
         ImageTransform pipeline = new PipelineImageTransform(augList, false);
@@ -130,11 +134,19 @@ class ASL_Classification_Training {
         MultiLayerNetwork model = new MultiLayerNetwork(nnconfig);
         model.init();
 
-        model.setListeners(new ScoreIterationListener(10)); //no need loop because not CSV
+        StatsStorage storage = new InMemoryStatsStorage();
+        UIServer server = UIServer.getInstance();
+        server.attach(storage);
+
+        // Set model listeners
+        model.setListeners(
+                new StatsListener(storage, 10),
+                new ScoreIterationListener(10)
+        );//no need loop because not CSV
 
         model.fit(traintestiter.getKey(), noOfEpoch);
 
-        File locationToSave = new File("asl_trainedmodel.zip");
+        File locationToSave = new File("asl_trainedmodel_new.zip");
         boolean saveUpdater = false;
         ModelSerializer.writeModel(model, locationToSave, saveUpdater);
     }

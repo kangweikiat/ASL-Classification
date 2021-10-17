@@ -11,7 +11,7 @@ import java.io.IOException;
 public class ASL_Classification {
     public static void main(String[] args) throws IOException {
 
-        File locationToLoad = new File("asl_trainedmodel.zip");
+        File locationToLoad = new File("asl_trainedmodel_new.zip");
 
         Pair<DataSetIterator, DataSetIterator> traintestiter;
 

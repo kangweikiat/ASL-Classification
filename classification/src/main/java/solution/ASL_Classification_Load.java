@@ -53,11 +53,11 @@ public class ASL_Classification_Load extends Application implements EventHandler
 
     private static MultiLayerNetwork model = null;
     private static final int noOfChannels = 3; // no of channels = 3 because RGB
-    private static final int height = 50; // height = 50
-    private static final int width = 50; // wid
+    private static final int height = 200; // height = 50
+    private static final int width = 200; // width = 50
 
     public static void main(String[] args) throws IOException {
-        File locationToLoad = new File("asl_trainedmodel.zip");
+        File locationToLoad = new File("asl_trainedmodel_new.zip");
         //Load Trained Model
         model = ModelSerializer.restoreMultiLayerNetwork(locationToLoad);
         System.out.println(model.summary());
